@@ -1,6 +1,13 @@
 import json
 import logging
 
+log_level = "NOTSET"
+with open("config.json") as cfg:
+    config = json.load(cfg)
+    if "log_level" in config:
+        log_level = config["log_level"]
+logging.basicConfig(filename=f"logs/{__name__}.log", level = log_level)
+
 class GatewayEvent():
 
     def __init__(self, op, event_data=None, seq=None, event_name=None):
@@ -10,7 +17,7 @@ class GatewayEvent():
         self.event_name = event_name
 
     def __repr__(self):
-        return self.__dict__()
+        return str(self.__dict__)
 
 
 def json_to_gateway(msg):

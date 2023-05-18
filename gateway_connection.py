@@ -6,6 +6,13 @@ import json
 import websockets
 import gateway_utils
 
+log_level = "NOTSET"
+with open("config.json") as cfg:
+    config = json.load(cfg)
+    if "log_level" in config:
+        log_level = config["log_level"]
+logging.basicConfig(filename=f"logs/{__name__}.log", level = log_level)
+
 # Check https://discord.com/developers/docs/reference#api-versioning for new api versions
 GATEWAY_URL = "wss://gateway.discord.gg/?v=10&encoding=json"
 NAME = "dicord-bot" # Not sure what this affects
