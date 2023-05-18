@@ -31,5 +31,6 @@ if __name__ == "__main__":
     @bot.event
     async def message_create(msg):
         print(f"Message create event received: {msg}")
+        # Look at received message and do whatever you want using it
 
     bot.run_gateway()
