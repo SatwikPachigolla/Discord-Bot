@@ -1,9 +1,10 @@
 import logging
-import gateway_utils
 import traceback
 import platform
-from gateway import GatewayCon
-
+import asyncio
+import json
+import websockets
+import gateway_utils
 
 # Check https://discord.com/developers/docs/reference#api-versioning for new api versions
 GATEWAY_URL = "wss://gateway.discord.gg/?v=10&encoding=json"
@@ -52,7 +53,7 @@ class Gateway():
     async def _heartbeat_loop(self, ws):
         while True:
             await asyncio.sleep(self._heartbeat_interval)
-            send_heartbeat() # Don't await to avoid adding send time to the heartbeat interval
+            await self.send_heartbeat(ws)
 
     async def send(self, ws, msg):
         strmsg = json.dumps(msg)
@@ -61,7 +62,7 @@ class Gateway():
 
     async def send_heartbeat(self, ws):
         heartbeat = {"op": 1, "d": d}
-        await send(ws, json.dumps(heartbeat))
+        await self.send(ws, json.dumps(heartbeat))
 
     async def handle_message(self, ws, msg):
         # https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-opcodes
@@ -76,7 +77,7 @@ class Gateway():
             await send_heartbeat(ws)
         elif msg.op == 10:
             logging.info("recieved HELLO")
-            self._heartbeat_interval = msg.event_data.heartbeat_interval / 1000 # convert millis to seconds
+            self._heartbeat_interval = msg.event_data['heartbeat_interval'] / 1000 # convert millis to seconds
             identity = { # https://discord.com/developers/docs/topics/gateway-events#identify
                 "op": 2,
                 "d": {
@@ -89,7 +90,7 @@ class Gateway():
                     "intents": 1 << 12 # https://discord.com/developers/docs/topics/gateway#gateway-intents
                 }
             }
-            await self.send(identity)
+            await self.send(ws, identity)
             logging.info("Identify has been sent")
         elif msg.op == 11:
             logging.debug("Heartbeat ack received")

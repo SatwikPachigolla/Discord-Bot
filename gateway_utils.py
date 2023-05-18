@@ -1,12 +1,5 @@
-import asyncio
-import websockets
 import json
-import traceback
-
-from dataclasses import dataclass
-from types import SimpleNamespace
-
-import logging as log
+import logging
 
 class GatewayEvent():
 
@@ -29,7 +22,7 @@ def json_to_gateway(msg):
     seq = obj["s"] if "s" in obj else None
     event_name = obj["t"] if "t" in obj else None
 
-    return GatewayEvent(op, event_data, seq, name)
+    return GatewayEvent(op, event_data, seq, event_name)
 
 def gateway_to_json(gateway_event):
     logging.debug("Unpacking gateway message: %s", gateway_event)

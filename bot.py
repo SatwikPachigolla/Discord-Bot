@@ -1,13 +1,12 @@
-from constants import *
-from gateway_protocol import Gateway
-from api import DiscordAPI
-
-import logging as log
+import logging
+import json
+from gateway_connection import Gateway
+# from api import DiscordAPI
 
 class Bot(object):
     def __init__(self, token):
         self.gateway = Gateway(token)
-        self.api = DiscordAPI(token)
+        #self.api = DiscordAPI(token)
 
     def run_gateway(self):
         self.gateway.run()
@@ -16,17 +15,17 @@ class Bot(object):
         return self.gateway.event(f)
 
 if __name__ == "__main__":
-    print("===  bot startup  ===")
+    print("---- Starting up the bot ----")
 
     config = None
-    with cfg = open("config.json"):
-        config = json.loads(cfg)
+    with open("config.json") as cfg:
+        config = json.load(cfg)
 
     bot = Bot(config["token"])
 
     @bot.event
     async def ready(x):
-        log.info("The discord gateway connection is ready")
+        logging.info("The discord gateway connection is ready")
 
     @bot.event
     async def message_create(msg):

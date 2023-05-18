@@ -22,5 +22,5 @@ In order for this to work you need to add a `config.json` file to the root level
 ## Running
 
 ```
-python pancake_bot.py
+python bot.py
 ```
