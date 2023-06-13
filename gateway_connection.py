@@ -11,19 +11,19 @@ with open("config.json") as cfg:
     config = json.load(cfg)
     if "log_level" in config:
         log_level = config["log_level"]
-logging.basicConfig(filename=f"logs/{__name__}.log", level = log_level)
+logging.basicConfig(filename=f"logs/{__name__}.log", level=log_level)
 
 # Check https://discord.com/developers/docs/reference#api-versioning for new api versions
 GATEWAY_URL = "wss://gateway.discord.gg/?v=10&encoding=json"
-NAME = "dicord-bot" # Not sure what this affects
+NAME = "discord-bot"  # Not sure what this affects
 OS = platform.system()
-d = None # https://discord.com/developers/docs/topics/gateway-events#heartbeat
+d = None  # https://discord.com/developers/docs/topics/gateway-events#heartbeat
 
 '''
 Handles creating a websocket connection with Discord's gateway. Implements heartbeating
 and handling
 '''
-class Gateway():
+class Gateway:
 
     def __init__(self, token):
         self._token = token
@@ -81,20 +81,21 @@ class Gateway():
                 logging.debug(f"unhandled event: {event}")
         elif msg.op == 1:
             logging.info("Additional heartbeat request received")
-            await send_heartbeat(ws)
+            await self.send_heartbeat(ws)
         elif msg.op == 10:
             logging.info("recieved HELLO")
-            self._heartbeat_interval = msg.event_data['heartbeat_interval'] / 1000 # convert millis to seconds
-            identity = { # https://discord.com/developers/docs/topics/gateway-events#identify
+            self._heartbeat_interval = msg.event_data['heartbeat_interval'] / 1000  # convert millis to seconds
+            identity = {  # https://discord.com/developers/docs/topics/gateway-events#identify
                 "op": 2,
                 "d": {
                     "token": self._token,
-                    "properties": { # https://discord.com/developers/docs/topics/gateway-events#identify-identify-connection-properties
+                    # https://discord.com/developers/docs/topics/gateway-events#identify-identify-connection-properties
+                    "properties": {
                         "os": OS,
                         "browser": NAME,
                         "device": NAME,
                     },
-                    "intents": 1 << 12 # https://discord.com/developers/docs/topics/gateway#gateway-intents
+                    "intents": 1 << 12  # https://discord.com/developers/docs/topics/gateway#gateway-intents
                 }
             }
             await self.send(ws, identity)

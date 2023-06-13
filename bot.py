@@ -8,7 +8,7 @@ with open("config.json") as cfg:
     config = json.load(cfg)
     if "log_level" in config:
         log_level = config["log_level"]
-logging.basicConfig(filename=f"logs/{__name__}.log", level = log_level)
+logging.basicConfig(filename=f"logs/{__name__}.log", level=log_level)
 
 class Bot(object):
     def __init__(self, token):
